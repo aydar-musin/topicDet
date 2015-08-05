@@ -6,15 +6,18 @@ args:
 """
 __author__ = 'Aydar'
 
-from instagram.client import InstagramAPI
 from Sketch import Skecth
-from Photo import Photo
 from TextProcessor import TextProcessor
+from Instagram import Instagramm
+from Photo import Photo
+from MainModule import MainModule
+import time
+
 import sys
 
 debug = 1
 subscription_type = "tag"
-object_id = "Kazan"
+object_id = "innopolis"
 
 # args processing
 if not debug:
@@ -25,50 +28,34 @@ if not debug:
     subscription_type = sys.argv[0]
     object_id = sys.argv[1]
 
+instagram = Instagramm()
+mainModule = MainModule()
 
-
-access_token = "1139854136.bf74f35.330b479bc8ca4645b460120c65528f8c"
-client_secret = "f3c9e7764acb4d8b86c1e2fe27928983"
-
-api = InstagramAPI(access_token = access_token, client_secret=client_secret)
-media_list = None
-
-if subscription_type == "tag":
-    media_list = api.tag_recent_media(tag_name=object_id, count=10)
-elif subscription_type == "location":
-    media_list = api.location_recent_media(location_name=object_id, count=10)
-else:
-    print("Error: Wrong subscription type")
-    raise
-
-sketch = Skecth()
-textProcessor = TextProcessor()
-
-
-def get_photos_from_medialist(medialist):
+def get_photos():
     photos=[]
-    for media in medialist:
-        photo = Photo()
-        photo.id = media.id
-        photo.words = textProcessor.get_words(media.caption.text)
-        photo.photo_url = media.images['low_resolution'].url
-        photo.time = media.created_time
+    if subscription_type == "tag":
+        photos = instagram.get_photos_by_tag(object_id)
+    elif subscription_type == "location":
+        photos = instagram.get_photos_by_location(object_id)
+    else:
+        print("Error: Wrong subscription type")
+        raise
 
-        photos.append(photo)
+    photos.sort(key=lambda x: x.datetime, reverse=True)
     return photos
 
 
-def save_photos_list(photos_list):
-    file = open("photos.txt", 'w', encoding="utf-8")
+while 1:
+    print("updating...")
+    photos = get_photos()
+    for photo in photos:
+        mainModule.try_add_photo(photo)
 
-    for photo in photos_list:
-        file.write(photo.id+'\t')
-        file.write(str(photo.time)+'\t')
-        file.write(photo.get_words_as_str()+'\t')
-        file.write(photo.photo_url+'\n')
-    file.close()
+    mainModule.save_current_state()
+    print("wait 30 sec")
+    time.sleep(30)
 
-photos = get_photos_from_medialist(media_list[0])
-save_photos_list(photos)
+
+
 
 
