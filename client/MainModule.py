@@ -25,9 +25,11 @@ class MainModule:
     def __load_history(self):
         print("loading history...")
         file = open("photos.txt","r",encoding="utf-8")
+
         for line in file:
-            photo = MainModule.__parse_photo_fromline(line)
-            self.photos_in_history[photo.id]=photo
+            if not line:
+                photo = MainModule.__parse_photo_fromline(line)
+                self.photos_in_history[photo.id]=photo
 
     def save_photos_list(self,photos_list):
         file = open("photos.txt", 'w', encoding="utf-8")
@@ -74,8 +76,9 @@ class State:
             str+=word
             str+=" "
 
+        str+="\n"
         for photo in self.photos:
-            str+="\n" + photo.__str__()
+            str+=photo.__str__()
 
         file=open(filename, 'w', encoding="utf-8")
         file.write(str)

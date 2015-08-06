@@ -11,9 +11,9 @@ namespace WebApplication1.Controllers
     {
         public ActionResult Index()
         {
-            var photos = Parser.LoadPhotos();
+            var state = Parser.LoadState();
 
-            return View(photos);
+            return View(state);
         }
 
         public ActionResult About()

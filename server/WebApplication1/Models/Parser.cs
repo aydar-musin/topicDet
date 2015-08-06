@@ -9,26 +9,29 @@ namespace WebApplication1.Models
 {
     public static class Parser
     {
-        public static List<Photo> LoadPhotos()
+        public static State LoadState()
         {
-            string file_path = WebConfigurationManager.AppSettings["photos_file_path"];
+            string file_path = WebConfigurationManager.AppSettings["state_file_path"];
             var lines = File.ReadAllLines(file_path);
 
-            List<Photo> result = new List<Photo>();
+            State state = new State();
+            state.Topics = lines[0];
 
-            foreach (var line in lines)
+            List<Photo> photos = new List<Photo>();
+            for(int i=1;i<lines.Length;i++)
             {
-                var args = line.Split('\t');
+                var args = lines[i].Split('\t');
 
                 Photo photo = new Photo();
                 photo.Id = args[0];
                 photo.DateTime = DateTime.Parse(args[1]);
                 photo.Text = args[2];
                 photo.PhotoUrl = args[3];
-                result.Add(photo);
+                photos.Add(photo);
             }
+            state.Photos = photos;
 
-            return result;
+            return state;
         }
     }
 }

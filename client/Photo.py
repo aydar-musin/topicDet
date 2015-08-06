@@ -17,4 +17,4 @@ class Photo:
         return str
 
     def __str__(self):
-        return self.id+'\t'+str(self.datetime)+'\t'+self.get_words_as_str()+'\t'+self.photo_url
+        return self.id+'\t'+str(self.datetime)+'\t'+self.get_words_as_str()+'\t'+self.photo_url+'\n'

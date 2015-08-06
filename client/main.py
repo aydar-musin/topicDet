@@ -17,7 +17,7 @@ import sys
 
 debug = 1
 subscription_type = "tag"
-object_id = "innopolis"
+object_id = "kazan"
 
 # args processing
 if not debug:
